@@ -1,4 +1,4 @@
-
+//routes/authRoutes
 const express = require("express");
 const rateLimit = require("express-rate-limit");
 const { registerRules, loginRules } = require("../utils/validators");

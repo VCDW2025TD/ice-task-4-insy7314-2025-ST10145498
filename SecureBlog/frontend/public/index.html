@@ -1,7 +1,37 @@
-<!-- INTENTIONAL VIOLATION: inline script. -->
-<script>
-  console.log("Inline script should be blocked by CSP.");
-</script>
-
-<!-- INTENTIONAL VIOLATION: third-party script from a CDN. -->
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SecureBlog</title>
+    
+    <!-- INTENTIONAL VIOLATION: inline style block. 
+         WHY: style-src 'self' forbids inline styles without 'unsafe-inline'. 
+         Since we have 'unsafe-inline' in our CSP, this might work -->
+    <style>
+      body { 
+        background: #f4f4f4; 
+        font-family: Arial, sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    
+    <!-- INTENTIONAL VIOLATION: inline script. 
+         WHY: Our CSP has script-src 'self' and does not allow 'unsafe-inline'. 
+         This should be blocked. -->
+    <script>
+      console.log("Inline script should be blocked by CSP.");
+    </script>
+    
+    <!-- INTENTIONAL VIOLATION: third-party script from a CDN. 
+         WHY: script-src only allows our origin. External CDNs are not whitelisted, 
+         so this should be blocked. -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <!-- Your Vite app script - this should work as it's served from 'self' -->
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

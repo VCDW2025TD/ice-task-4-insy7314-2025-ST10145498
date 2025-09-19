@@ -6,7 +6,7 @@ import Login from "./Pages/Login";
 import Dashboard from "./Pages/Dashboard";
 import Logout from "./Pages/Logout";
 import ProtectedRoute from "./components/ProtectedRoute";
-import SecurityDemo from "./SecurityDemo"; // optional - include only if you added the file
+import SecurityDemo from "./SecurityDemo"; 
 
 function App() {
   return (

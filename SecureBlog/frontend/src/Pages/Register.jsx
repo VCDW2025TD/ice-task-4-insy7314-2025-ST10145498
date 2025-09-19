@@ -4,6 +4,7 @@ import API from "../services/api";
 import { useNavigate } from "react-router-dom";
 import { isValidEmail, isStrongPassword } from "../utils/validators";
 
+
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
