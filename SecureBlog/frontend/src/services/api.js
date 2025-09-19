@@ -1,35 +1,25 @@
 // frontend/src/services/api.js
 import axios from "axios";
 
+/**
+ * Use this single axios instance everywhere.
+ * If you want to override the backend host in dev, set VITE_BACKEND_URL in .env
+ */
+const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000/api";
+
 const API = axios.create({
-  // Backend runs on HTTP port 5000 - make sure this matches your backend
-  baseURL: "http://localhost:5000/api",
+  baseURL: backendUrl,
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true,
+  
 });
 
-// Attach JWT automatically if present
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// Handle response errors
-API.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401 || error.response?.status === 403) {
-      localStorage.removeItem("token");
-      // Optionally redirect to login
-      window.location.href = "/login";
-    }
-    return Promise.reject(error);
-  }
-);
-
+export { API };
 export default API;

@@ -1,76 +1,50 @@
 // backend/src/server.js
-const express = require("express");
+const fs = require("fs");
+const http = require("http");
+const https = require("https");
 const mongoose = require("mongoose");
-const cors = require("cors");
-const helmet = require("helmet");
-const dotenv = require("dotenv");
+const app = require("./app");
+require("dotenv").config();
 
-dotenv.config();
-const app = express();
+const DEFAULT_PORT = Number(process.env.PORT) || 5000;
+const serveFrontend = process.env.SERVE_FRONTEND === "true";
 
-// Parse JSON and CSP reports sent by the browser
-app.use(express.json({ type: ["application/json", "application/csp-report"] }));
+const start = async () => {
+  try {
+    if (process.env.MONGO_URI) {
+      await mongoose.connect(process.env.MONGO_URI);
+      console.log("Connected to MongoDB");
+    } else {
+      console.warn("MONGO_URI not set — skipping DB connect.");
+    }
 
-// CORS – allow frontend
-app.use(cors({
-  origin: ["http://localhost:5173"],
-  credentials: true,
-}));
+    const sslKeyExists = fs.existsSync("./ssl/privatekey.pem");
+    const sslCertExists = fs.existsSync("./ssl/certificate.pem");
 
-// 1) Baseline security headers
-app.use(helmet());
+    if (sslKeyExists && sslCertExists) {
+      const sslOptions = {
+        key: fs.readFileSync("./ssl/privatekey.pem"),
+        cert: fs.readFileSync("./ssl/certificate.pem"),
+      };
+      https.createServer(sslOptions, app).listen(DEFAULT_PORT, () => {
+        console.log(`Secure server running at https://localhost:${DEFAULT_PORT}`);
+        console.log(
+          `CSP mode: ${process.env.NODE_ENV !== "production" ? "REPORT-ONLY (dev)" : "ENFORCED (prod)"}`
+        );
+      });
+    } else {
+      // fallback to plain HTTP (easier for testing if you don't have cert files)
+      http.createServer(app).listen(DEFAULT_PORT, () => {
+        console.log(`Server running at http://localhost:${DEFAULT_PORT}`);
+        console.log(
+          `CSP mode: ${process.env.NODE_ENV !== "production" ? "REPORT-ONLY (dev)" : "ENFORCED (prod)"}`
+        );
+      });
+    }
+  } catch (err) {
+    console.error("Failed to start server:", err);
+    process.exit(1);
+  }
+};
 
-// 2) Content Security Policy
-app.use(
-  helmet.contentSecurityPolicy({
-    useDefaults: true,
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'"],
-      imgSrc: ["'self'"],
-      connectSrc: ["'self'"],
-      "report-uri": ["/csp-report"], // CSP violation reporting
-    },
-    reportOnly: process.env.NODE_ENV !== "production", // Report-only in dev
-  })
-);
-
-// 3) Receive browser violation reports
-app.post("/csp-report", (req, res) => {
-  console.log("CSP Violation Report:", JSON.stringify(req.body, null, 2));
-  res.sendStatus(204);
-});
-
-// MongoDB
-mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/secureblog")
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("MongoDB connection error:", err));
-
-// Routes
-const authRoutes = require("./routes/authRoutes");
-app.use("/api/auth", authRoutes);
-
-// Health route
-app.get("/api/health", (_req, res) => {
-  res.json({ ok: true, ts: new Date().toISOString() });
-});
-
-// Protected route example
-const { protect } = require("./middleware/authMiddleware");
-app.get("/api/protected", protect, (req, res) => {
-  res.json({ 
-    message: `Hello user ${req.user.id}! This is a protected route.`,
-    user: req.user,
-  });
-});
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`SecureBlog API running at http://localhost:${PORT}`);
-  console.log(
-    `CSP mode: ${process.env.NODE_ENV !== "production" ? "REPORT-ONLY (dev)" : "ENFORCED (prod)"}`
-  );
-});
-
-module.exports = app;
+start();
