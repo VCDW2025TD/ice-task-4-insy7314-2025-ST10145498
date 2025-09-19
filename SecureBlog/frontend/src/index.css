@@ -1,0 +1,143 @@
+/* === App layout & navbar === */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #f9fafb;
+  color: #111827;
+}
+
+.navbar {
+  background: #4f46e5;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-logo {
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  margin-right: 12px;
+}
+
+.nav-link {
+  color: #e6e6ff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.logout-btn {
+  background: #fff;
+  color: #4f46e5;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.logout-btn:hover {
+  background: #eef2ff;
+}
+
+/* === Main / footer === */
+.main-content {
+  flex: 1;
+  padding: 28px;
+}
+
+.footer {
+  background: #f3f4f6;
+  text-align: center;
+  padding: 12px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* === Forms === */
+.form-container {
+  max-width: 420px;
+  margin: 36px auto;
+  background: #ffffff;
+  padding: 22px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+.form-title {
+  margin-bottom: 12px;
+  color: #4f46e5;
+  text-align: center;
+}
+
+.form-message {
+  margin-bottom: 12px;
+  color: #dc2626; /* red */
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-input {
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.form-btn {
+  background: #4f46e5;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.form-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* === Dashboard === */
+.dashboard-container {
+  max-width: 680px;
+  margin: 36px auto;
+  background: white;
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  text-align: center;
+}
+
+.dashboard-title {
+  color: #4f46e5;
+  margin-bottom: 8px;
+}
+
+.dashboard-text {
+  color: #374151;
+}
